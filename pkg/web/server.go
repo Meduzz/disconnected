@@ -30,7 +30,7 @@ func HttpServer(contextPath string, fn func(*Server)) error {
 }
 
 // Quickapi - mount entities at mount prefixed by contextPath if not present.
-func (s *Server) Quickapi(mount string, db *gorm.DB, entities ...model.Entity) {
+func (s *Server) Quickapi(mount string, db *gorm.DB, config *http.Config, entities ...model.Entity) {
 	path := mount
 
 	if s.contextPath != "" && !strings.HasPrefix(mount, s.contextPath) {
@@ -39,7 +39,7 @@ func (s *Server) Quickapi(mount string, db *gorm.DB, entities ...model.Entity) {
 
 	api := s.srv.Group(path)
 
-	http.For(db, api, entities...)
+	http.For(db, api, config, entities...)
 }
 
 // Static - mount root at mount, including contextPath if not already present.
