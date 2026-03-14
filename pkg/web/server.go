@@ -18,11 +18,15 @@ type (
 	}
 )
 
-func HttpServer(contextPath string, fn func(*Server)) error {
+func HttpServer(contextPath string, fn func(*Server) error) error {
 	srv := gin.Default()
 
 	s := &Server{contextPath: contextPath, srv: srv}
-	fn(s)
+	err := fn(s)
+
+	if err != nil {
+		return err
+	}
 
 	port := utilz.Env("PORT", "8080")
 

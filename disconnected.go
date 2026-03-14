@@ -6,7 +6,7 @@ import (
 	"github.com/Meduzz/rpc/encoding"
 )
 
-func HttpServer(contextPath string, fn func(*web.Server)) error {
+func HttpServer(contextPath string, fn func(*web.Server) error) error {
 	return web.HttpServer(contextPath, fn)
 }
 
