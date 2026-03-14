@@ -2,7 +2,6 @@ package web
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/Meduzz/helper/utilz"
 	"github.com/Meduzz/quickapi/http"
@@ -13,15 +12,14 @@ import (
 
 type (
 	Server struct {
-		contextPath string
-		srv         *gin.Engine
+		srv *gin.Engine
 	}
 )
 
-func HttpServer(contextPath string, fn func(*Server) error) error {
+func HttpServer(fn func(*Server) error) error {
 	srv := gin.Default()
 
-	s := &Server{contextPath: contextPath, srv: srv}
+	s := &Server{srv: srv}
 	err := fn(s)
 
 	if err != nil {
@@ -37,10 +35,6 @@ func HttpServer(contextPath string, fn func(*Server) error) error {
 func (s *Server) Quickapi(mount string, db *gorm.DB, config *http.Config, entities ...model.Entity) {
 	path := mount
 
-	if s.contextPath != "" && !strings.HasPrefix(mount, s.contextPath) {
-		path = fmt.Sprintf("%s%s", s.contextPath, mount)
-	}
-
 	api := s.srv.Group(path)
 
 	http.For(db, api, config, entities...)
@@ -48,13 +42,7 @@ func (s *Server) Quickapi(mount string, db *gorm.DB, config *http.Config, entiti
 
 // Static - mount root at mount, including contextPath if not already present.
 func (s *Server) Static(mount string, root string) {
-	path := mount
-
-	if s.contextPath != "" && !strings.HasPrefix(mount, s.contextPath) {
-		path = fmt.Sprintf("%s%s", s.contextPath, mount)
-	}
-
-	s.srv.Static(path, root)
+	s.srv.Static(mount, root)
 }
 
 // SPA - send file for all unknown routes
@@ -65,6 +53,6 @@ func (s *Server) SPA(file string) {
 }
 
 // WithRouter - acts as the escape valve for all other cases.
-func (s *Server) WithRouter(fn func(*gin.Engine)) {
-	fn(s.srv)
+func (s *Server) WithRouter(fn func(*gin.Engine) error) error {
+	return fn(s.srv)
 }
