@@ -21,7 +21,7 @@ type (
 	}
 )
 
-func EventServer(codec encoding.Codec, fn func(*Server) error) error {
+func EventServer(codec encoding.Codec, fn func(*Server) error, blocking bool) error {
 	conn, err := nuts.Connect()
 
 	if err != nil {
@@ -36,9 +36,13 @@ func EventServer(codec encoding.Codec, fn func(*Server) error) error {
 		return err
 	}
 
-	return block.Block(func() error {
-		return conn.Drain()
-	})
+	if blocking {
+		return block.Block(func() error {
+			return conn.Drain()
+		})
+	}
+
+	return nil
 }
 
 func (s *Server) Quickapi(prefix string, db *gorm.DB, entities ...model.Entity) error {

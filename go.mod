@@ -3,7 +3,7 @@ module github.com/Meduzz/disconnected
 go 1.24.4
 
 require (
-	github.com/Meduzz/helper v0.0.0-20251019194926-3f706d4c6d4b
+	github.com/Meduzz/helper v0.0.0-20260228073907-ba38fde71e6a
 	github.com/Meduzz/quickapi v0.0.0-20251103062326-56a7a73731ab
 )
 
@@ -37,22 +37,23 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	golang.org/x/arch v0.22.0 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
-	golang.org/x/mod v0.29.0 // indirect
-	golang.org/x/net v0.46.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/tools v0.38.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/mod v0.32.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/tools v0.41.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
 require (
+	github.com/Meduzz/dsl v0.0.0-20260301091922-5d229b2d79b9
 	github.com/Meduzz/quickapi-rpc v0.0.0-20251102100713-aaa7e2a6db05
 	github.com/Meduzz/rpc v0.0.0-20240915092337-79dc2ae29496
 	github.com/gin-gonic/gin v1.11.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/nats-io/nats.go v1.47.0
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	gorm.io/gorm v1.31.1
 )
