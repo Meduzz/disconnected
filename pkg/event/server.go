@@ -40,6 +40,10 @@ func EventServer(codec encoding.Codec, fn func(*Server) error, blocking bool) er
 		return block.Block(func() error {
 			return conn.Drain()
 		})
+	} else {
+		block.RegisterShutdownHook(func() error {
+			return conn.Drain()
+		})
 	}
 
 	return nil

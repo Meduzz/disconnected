@@ -71,7 +71,7 @@ func App(it *app.App, only ...serviceref.ServiceRef) {
 
 				return agg
 			})
-		}, !hasWeb) // TODO this wont allow us to drain before shutdown :/
+		}, !hasWeb)
 	}
 
 	if hasWeb {
