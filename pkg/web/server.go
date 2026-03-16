@@ -2,6 +2,9 @@ package web
 
 import (
 	"fmt"
+	"io/fs"
+
+	gohttp "net/http"
 
 	"github.com/Meduzz/helper/utilz"
 	"github.com/Meduzz/quickapi/http"
@@ -45,10 +48,24 @@ func (s *Server) Static(mount string, root string) {
 	s.srv.Static(mount, root)
 }
 
+// StaticFS - like static but with a fs.FS
+func (s *Server) StaticFS(mount string, fs fs.FS) {
+	httpfs := gohttp.FS(fs)
+	s.srv.StaticFS(mount, httpfs)
+}
+
 // SPA - send file for all unknown routes
 func (s *Server) SPA(file string) {
 	s.srv.NoRoute(func(ctx *gin.Context) {
 		ctx.File(file)
+	})
+}
+
+// SPAFs - like SPA but with a fs.FS.
+func (s *Server) SPAFs(file string, fs fs.FS) {
+	s.srv.NoRoute(func(ctx *gin.Context) {
+		httpfs := gohttp.FS(fs)
+		ctx.FileFromFS(file, httpfs)
 	})
 }
 
