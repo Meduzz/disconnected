@@ -41,6 +41,7 @@ func EventServer(codec encoding.Codec, fn func(*Server) error, blocking bool) er
 			return conn.Drain()
 		})
 	} else {
+		block.EnableHooks() // enable shutdown hooks
 		block.RegisterShutdownHook(func() error {
 			return conn.Drain()
 		})

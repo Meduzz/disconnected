@@ -24,7 +24,7 @@ func RpcServer(codec encoding.Codec, fn func(*event.Server) error) error {
 	return event.EventServer(codec, fn, true)
 }
 
-func App(it *app.App, only ...serviceref.ServiceRef) {
+func App(it *app.App, only ...serviceref.ServiceRef) error {
 	matches := it.Services
 
 	if len(only) > 0 {
@@ -55,7 +55,7 @@ func App(it *app.App, only ...serviceref.ServiceRef) {
 	webs, hasWeb := groupedRoutes[string(endpoint.HttpKind)]
 
 	if hasEvents {
-		event.EventServer(encoding.Json(), func(s *event.Server) error {
+		err := event.EventServer(encoding.Json(), func(s *event.Server) error {
 			return slice.Fold(events, nil, func(e *endpoint.Endpoint, agg error) error {
 				// TODO even worth to continue if agg != nil?
 				var err error
@@ -72,13 +72,17 @@ func App(it *app.App, only ...serviceref.ServiceRef) {
 				return agg
 			})
 		}, !hasWeb)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	if hasWeb {
 		// dig out the context path for later
 		ctxPath := it.ContextPath
 
-		web.HttpServer(func(s *web.Server) error {
+		return web.HttpServer(func(s *web.Server) error {
 			return s.WithRouter(func(r *gin.Engine) error {
 				slice.ForEach(webs, func(e *endpoint.Endpoint) {
 					if h := handler.HandlerRegistry.WebHandler(e.Name); h != nil {
@@ -95,4 +99,6 @@ func App(it *app.App, only ...serviceref.ServiceRef) {
 			})
 		})
 	}
+
+	return nil
 }
