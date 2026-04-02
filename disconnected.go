@@ -61,7 +61,7 @@ func App(it *app.App, only ...serviceref.ServiceRef) error {
 				var err error
 				if h := handler.HandlerRegistry.RpcHandler(e.Name); h != nil {
 					err = s.HandleRPC(e.Route.Topic, e.Route.ConsumerGroup, h)
-				} else if h := handler.HandlerRegistry.EvebtHandler(e.Name); h != nil {
+				} else if h := handler.HandlerRegistry.EventHandler(e.Name); h != nil {
 					err = s.HandleEvent(e.Route.Topic, e.Route.ConsumerGroup, h)
 				}
 

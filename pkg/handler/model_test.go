@@ -27,7 +27,7 @@ func TestHandlerRegistry(t *testing.T) {
 				t.Error("rpcResult was not nil")
 			}
 
-			eventResult := storage.EvebtHandler("web-test")
+			eventResult := storage.EventHandler("web-test")
 
 			if eventResult != nil {
 				t.Error("eventResult was not nil")
@@ -50,7 +50,7 @@ func TestHandlerRegistry(t *testing.T) {
 				t.Error("webResult was not nil")
 			}
 
-			eventResult := storage.EvebtHandler("rpc-test")
+			eventResult := storage.EventHandler("rpc-test")
 
 			if eventResult != nil {
 				t.Error("eventResult was not nil")
@@ -60,7 +60,7 @@ func TestHandlerRegistry(t *testing.T) {
 
 	t.Run("RpcHandlers", func(t *testing.T) {
 		subject.RegisterEvent("event-test", func(ec *rpc.EventContext) {})
-		result := storage.EvebtHandler("event-test")
+		result := storage.EventHandler("event-test")
 
 		if result == nil {
 			t.Error("result was nil")

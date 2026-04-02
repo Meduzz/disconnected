@@ -91,7 +91,7 @@ func (r *Registry) RpcHandler(name string) rpc.RpcHandler {
 	})).rpcHandler
 }
 
-func (r *Registry) EvebtHandler(name string) rpc.EventHandler {
+func (r *Registry) EventHandler(name string) rpc.EventHandler {
 	return slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
 		return w.name == name
 	})).eventHandler
