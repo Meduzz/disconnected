@@ -2,7 +2,13 @@ package event
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/Meduzz/disconnected/pkg/filters"
+	"github.com/Meduzz/disconnected/pkg/handler"
+	"github.com/Meduzz/dsl/app"
+	"github.com/Meduzz/dsl/endpoint"
+	serviceref "github.com/Meduzz/dsl/serviceRef"
 	"github.com/Meduzz/helper/block"
 	"github.com/Meduzz/helper/fp/slice"
 	"github.com/Meduzz/helper/nuts"
@@ -82,4 +88,32 @@ func (s *Server) HandleEvent(topic, queue string, fn rpc.EventHandler) error {
 	_, err := rpc.HandleEvent(s.conn, s.codec, topic, queue, fn)
 
 	return err
+}
+
+func (s *Server) Endpoint(e *endpoint.Endpoint) error {
+	rpcHandler := handler.HandlerRegistry.RpcHandler(e.Name)
+	if rpcHandler != nil {
+		return s.HandleRPC(e.Route.Topic, e.Route.ConsumerGroup, rpcHandler)
+	}
+
+	eventHandler := handler.HandlerRegistry.EventHandler(e.Name)
+	if eventHandler != nil {
+		return s.HandleEvent(e.Route.Topic, e.Route.ConsumerGroup, eventHandler)
+	}
+
+	return fmt.Errorf("no rpcHandler with name: %s", e.Name)
+}
+
+func (s *Server) ForApp(it *app.App, only ...serviceref.ServiceRef) error {
+	events := filters.FetchEndpointsByType(it, endpoint.RpcKind, only...)
+
+	return slice.Fold(events, nil, func(e *endpoint.Endpoint, agg error) error {
+		err := s.Endpoint(e)
+
+		if err != nil {
+			return errors.Join(agg, err)
+		}
+
+		return agg
+	})
 }

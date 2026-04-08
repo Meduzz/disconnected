@@ -1,8 +1,15 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/Meduzz/disconnected/pkg/filters"
+	"github.com/Meduzz/disconnected/pkg/handler"
+	"github.com/Meduzz/dsl/app"
+	"github.com/Meduzz/dsl/endpoint"
+	serviceref "github.com/Meduzz/dsl/serviceRef"
+	"github.com/Meduzz/helper/fp/slice"
 	"github.com/Meduzz/helper/utilz"
 	"github.com/Meduzz/quickapi/http"
 	"github.com/Meduzz/quickapi/model"
@@ -55,4 +62,37 @@ func (s *Server) SPA(file string) {
 // WithRouter - acts as the escape valve for all other cases.
 func (s *Server) WithRouter(fn func(*gin.Engine) error) error {
 	return fn(s.srv)
+}
+
+func (s *Server) Endpoint(ctxPath string, e *endpoint.Endpoint) error {
+	webHandler := handler.HandlerRegistry.WebHandler(e.Name)
+	if webHandler != nil {
+		path := e.Route.Path
+		if ctxPath != "" {
+			path = fmt.Sprintf("%s%s", ctxPath, path)
+		}
+
+		s.srv.Handle(e.Route.Method, path, webHandler)
+
+		return nil
+	}
+
+	return fmt.Errorf("no webHandler with name: %s", e.Name)
+}
+
+func (s *Server) WithApp(it *app.App, only ...serviceref.ServiceRef) error {
+	webs := filters.FetchEndpointsByType(it, endpoint.HttpKind, only...)
+
+	return slice.Fold(webs, nil, func(e *endpoint.Endpoint, agg error) error {
+		err := s.Endpoint(it.ContextPath, e)
+
+		if err != nil {
+			if agg != nil {
+				return errors.Join(agg, err)
+			}
+			return err
+		}
+
+		return agg
+	})
 }
