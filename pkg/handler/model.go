@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/Meduzz/helper/fp/slice"
 	"github.com/Meduzz/helper/service"
 	"github.com/Meduzz/rpc"
@@ -80,19 +82,40 @@ func (h *namedHandlerBuilder) register(name string, cb func(h *handlerWrapper)) 
 }
 
 func (r *Registry) WebHandler(name string) gin.HandlerFunc {
-	return slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
+	match := slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
 		return w.name == name
-	})).webHandler
+	}))
+
+	if match != nil {
+		return match.webHandler
+	}
+
+	log.Printf("No handler found for %s\n", name)
+	return nil
 }
 
 func (r *Registry) RpcHandler(name string) rpc.RpcHandler {
-	return slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
+	match := slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
 		return w.name == name
-	})).rpcHandler
+	}))
+
+	if match != nil {
+		return match.rpcHandler
+	}
+
+	log.Printf("No handler found for %s\n", name)
+	return nil
 }
 
 func (r *Registry) EventHandler(name string) rpc.EventHandler {
-	return slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
+	match := slice.Head(slice.Filter(r.handlers, func(w *handlerWrapper) bool {
 		return w.name == name
-	})).eventHandler
+	}))
+
+	if match != nil {
+		return match.eventHandler
+	}
+
+	log.Printf("No handler found for %s\n", name)
+	return nil
 }
