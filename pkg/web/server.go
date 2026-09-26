@@ -64,6 +64,7 @@ func (s *Server) WithRouter(fn func(*gin.Engine) error) error {
 	return fn(s.srv)
 }
 
+// Endppoint - turn a dsl endpoint into a gin endpoint
 func (s *Server) Endpoint(ctxPath string, e *endpoint.Endpoint) error {
 	webHandler := handler.HandlerRegistry.WebHandler(e.Name)
 	if webHandler != nil {
@@ -80,6 +81,7 @@ func (s *Server) Endpoint(ctxPath string, e *endpoint.Endpoint) error {
 	return fmt.Errorf("no webHandler with name: %s", e.Name)
 }
 
+// WithApp - turn a dsl app into a set of gin endpoints
 func (s *Server) WithApp(it *app.App, only ...serviceref.ServiceRef) error {
 	webs := filters.FetchEndpointsByType(it, endpoint.HttpKind, only...)
 
