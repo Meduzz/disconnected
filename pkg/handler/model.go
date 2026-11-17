@@ -39,9 +39,13 @@ type (
 )
 
 var (
-	_ service.Delegate    = &handlerDelegate{}
-	_ NamedHandlerBuilder = &namedHandlerBuilder{}
+	_ service.Delegate    = (*handlerDelegate)(nil)
+	_ NamedHandlerBuilder = (*namedHandlerBuilder)(nil)
 )
+
+func NewHandlerDelegate() service.Delegate {
+	return &handlerDelegate{}
+}
 
 func (h *handlerDelegate) Visit(svc service.Service) error {
 	it, ok := svc.(NamedHandlerProvider)
